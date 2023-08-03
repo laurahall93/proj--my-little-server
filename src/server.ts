@@ -6,14 +6,17 @@ import { pickRandom } from "./random";
 const app = express();
 const serverStartDate = new Date();
 let serverHitCount = 0;
+let routes : string[] = [];
 
 app.get("/", (req, res) => {
+  routes.push('/');
   res.send(
     "This is the default path - and it isn't very interesting, sorry. \nTry visiting localhost:4000/creation-time, localhost:4000/current-time"
   );
 });
 
 app.get("/creation-time", (req, res) => {
+  routes.push('/creation-time');
   res.json({
     message: `The server was started at ${serverStartDate.toTimeString()}`,
     utc: serverStartDate.toUTCString(),
@@ -22,6 +25,7 @@ app.get("/creation-time", (req, res) => {
 });
 
 app.get("/current-time", (req, res) => {
+  routes.push('/current-time');
   const dateOfRequestHandling = new Date();
 
   res.json({
@@ -32,6 +36,7 @@ app.get("/current-time", (req, res) => {
 });
 
 app.get("/hits", (req, res) => {
+  routes.push('/hits');
   serverHitCount += 1;
   res.json({
     note: "We've registered your hit!",
@@ -41,6 +46,7 @@ app.get("/hits", (req, res) => {
 });
 
 app.get("/hits-stealth", (req, res) => {
+  routes.push('/hits-stealth');
   res.json({
     note: "Oooh, you ninja. We didn't count that hit.",
     currentTotal: serverHitCount,
@@ -48,15 +54,25 @@ app.get("/hits-stealth", (req, res) => {
   });
 });
 
-app.get("/ponies", (req, res) => {
+app.get("/history", (req, res) => {
+  routes.push('/history');
+  res.json({
+    routes: routes,
+  });
+});
+
+app.get("/ponies/random", (req, res) => {
+  routes.push('/ponies/random');
+  const randomPonie = pickRandom(ponyData.members)
   res.json({
     message: "Loaded dummy JSON data:",
-    data: ponyData,
+    data: randomPonie,
     countedAsHit: false,
   });
 });
 
 app.get("/season-one", (req, res) => {
+  routes.push('/season-one');
   res.json({
     countedAsHit: false,
     data: seasonOneEpisodes,
@@ -64,6 +80,7 @@ app.get("/season-one", (req, res) => {
 });
 
 app.get("/season-one/random", (req, res) => {
+  routes.push('/season-one/random');
   const randomEpisode = pickRandom(seasonOneEpisodes);
   res.json({
     countedAsHit: false,
@@ -71,8 +88,18 @@ app.get("/season-one/random", (req, res) => {
   });
 });
 
+app.get("/hello-world", (req, res) => {
+  routes.push('/hello-world');
+  res.json({
+    "english": "Hello world!",
+    "esperanto": "Saluton mondo!",
+    "hawaiian": "Aloha Honua",
+    "turkish": "Merhaba Dünya!"
+  });
+})
+
 // using 4000 by convention, but could be changed
-const PORT_NUMBER = 4000;
+const PORT_NUMBER = 5050;
 
 app.listen(PORT_NUMBER, () => {
   console.log(
